@@ -10,16 +10,28 @@ Users will set up a scheduled task to run this script on a regular basis. Each t
 Once everything is set up, the script just runs in the background, and the user's selection of desktop wallpapers changes throughout the year.
 
 For example, to display winter-themed desktop backgrounds from January through March, name your folder:
+
 01_01-03_31
+
 This is parsed into the date range of January 1 through March 31.
 
+
+
 To display Christmas backgrounds between December 1 and December 25, name your folder:
+
 12_01-12_25
+
 This is parsed into the date range of December 1 through December 25.
 
+
+
 To display select wallpapers only on a specific date (such as an anniversary or memorial), name your folder as follows:
+
 09_11
+
 The contents of this folder will only be displayed on September 11.
+
+
 
 If you want certain images to be available on a limited basis year-round, just put those images into the main wallpaper folder.
 
