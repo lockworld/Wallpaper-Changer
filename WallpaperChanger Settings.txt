@@ -1,0 +1,11 @@
+Get New Images From This Directory:
+C:\Users\Family\Documents\OneDrive\Pictures\wallpaper
+
+Store Current Wallpaper Images in This Directory:
+C:\Users\Family\Pictures\Wallpaper_Destination
+
+Keep This Number of Wallpaper Images:
+7
+
+Wallpaper Last Changed:
+10/28/2016 10:20:00 PM
