@@ -1,42 +1,10 @@
 # Wallpaper-Changer
-Originally created to manually change the desktop wallpaper for Windows XP, this script was later modified to work with Windows 7+.
+Originally created to manually change the desktop wallpaper for Windows XP, this script was later modified to work with Windows 7+. An HTA application was used to provide a user interface to update settings for the script, controlling the source and destination folders.
 
-This is the newer version of the script meant to work with Windows 7+. It is incomplete...there is no way to adjust the user settings except to manually update the "WallpaperChanger Settings.txt" file.
+The VBScript was later modified to work with Windows 7+, which allowed users to have a folder to display rotating wallpapers. The script's main function now was to copy a user-defined number of images from the source folder to the destination folder, allowing the wallpaper slideshow folder to contain seasonally or date-appropriate wallpapers. Windows 7+ didn't support HTA applications any more for security reasons, so there was no way to adjust the user settings except to manually update the "WallpaperChanger Settings.txt" file.
 
-This script allows you to keep a master folder of all of your seasonal desktop background images in a single folder. You can create subfolders named with a date-range as shown in the example below. When the script runs, it looks for a folder with a date range containing the current date. If found, the script will use this folder as the source folder for the images and copy a new image from the source folder to a destination folder. The script also allows a 20% chance that an image from the main wallpaper folder will be selected instead of an image from the seasonal folder, allowing some images to be displayed year-round, while most images are displayed only as seasonably appropriate. The user can then set up his desktop wallpaper slideshow to point to the destination folder.
+The VB script is being replaced with a Windows Service, which will allow you to keep a master folder of all of your seasonal desktop background images in a single folder. The service will index the files in the master folder and provide an interface that can be used to specify which images should be displayed on a specific date. You can configure how often the service searches for date-appropriate images, and where to draw images from if no date-appropriate images are found. Each time the service searches for a date-appropriate image, it will copy a specified number of images from the source folder to the destination folder. Optionally, you can set up a year-round folder containing images that can be displayed at any time, and set a percentage likelihood that the script will select an image from this folder instead of a date-appropriate image. The user will have to update the settings in Windows so that the desktop wallpaper slideshow points to the destination folder.
 
-Users will set up a scheduled task to run this script on a regular basis. Each time the script is run, it will select one image from the source folder and copy it to the destination folder. The script will only keep as many images in the destination folder as configured in the settings file.
-
-Once everything is set up, the script just runs in the background, and the user's selection of desktop wallpapers changes throughout the year.
-
-For example, to display winter-themed desktop backgrounds from January through March, name your folder:
-
-01_01-03_31
-
-This is parsed into the date range of January 1 through March 31.
-
-
-
-To display Christmas backgrounds between December 1 and December 25, name your folder:
-
-12_01-12_25
-
-This is parsed into the date range of December 1 through December 25.
-
-
-
-To display select wallpapers only on a specific date (such as an anniversary or memorial), name your folder as follows:
-
-09_11
-
-The contents of this folder will only be displayed on September 11.
-
-
-
-If you want certain images to be available on a limited basis year-round, just put those images into the main wallpaper folder.
-
-The script does not care what the file name is, and will work with JPG, GIF, and PNG images.
-
-I recommend setting the scheduled task to run at least as many times a day as you have set for maximum images because only one new image is processed each time the task is run, and only one of the older iamges will be removed each time the task is run.
+The service does not care what the file name is, and will work with JPG, GIF, and PNG images.
 
 
