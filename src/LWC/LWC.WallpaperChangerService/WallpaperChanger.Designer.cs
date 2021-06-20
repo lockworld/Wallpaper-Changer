@@ -1,6 +1,6 @@
 ﻿namespace LWC.WallpaperChangerService
 {
-    partial class Service1
+    partial class WallpaperChanger
     {
         /// <summary> 
         /// Required designer variable.
