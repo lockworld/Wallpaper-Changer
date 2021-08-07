@@ -17,26 +17,26 @@ namespace LWC.WallpaperChangerService
             try
             {
                 log.Debug("Logging message: " + message);
-                string path = AppDomain.CurrentDomain.BaseDirectory + "\\Logs";
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                string filepath = AppDomain.CurrentDomain.BaseDirectory + "\\Logs\\" + DateTime.Now.Date.ToString("yyyy-MM-dd") + ".txt";
-                if (!File.Exists(filepath))
-                {
-                    // Create a file to write to.   
-                    using (StreamWriter sw = File.CreateText(filepath))
-                    {
-                        sw.WriteLine("Timestamp\tSeverity\tSource\tMessage");
-                    }
-                }
+                //string path = AppDomain.CurrentDomain.BaseDirectory + "\\Logs";
+                //if (!Directory.Exists(path))
+                //{
+                //    Directory.CreateDirectory(path);
+                //}
+                //string filepath = AppDomain.CurrentDomain.BaseDirectory + "\\Logs\\" + DateTime.Now.Date.ToString("yyyy-MM-dd") + ".txt";
+                //if (!File.Exists(filepath))
+                //{
+                //    // Create a file to write to.   
+                //    using (StreamWriter sw = File.CreateText(filepath))
+                //    {
+                //        sw.WriteLine("Timestamp\tSeverity\tSource\tMessage");
+                //    }
+                //}
 
-                string line = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss.fff") + "\t" + type.ToString() + "\t" + source + "\t" + message.Replace("\t", "    ");
-                using (StreamWriter sw = File.AppendText(filepath))
-                {
-                        sw.WriteLine(line);                
-                }
+                //string line = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss.fff") + "\t" + type.ToString() + "\t" + source + "\t" + message.Replace("\t", "    ");
+                //using (StreamWriter sw = File.AppendText(filepath))
+                //{
+                //        sw.WriteLine(line);                
+                //}
             }
             catch
             {
@@ -46,6 +46,7 @@ namespace LWC.WallpaperChangerService
 
         public static void AddConfiguration(string key, string value)
         {
+            
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             config.AppSettings.Settings.Add(key,value);
             config.Save(ConfigurationSaveMode.Modified);
