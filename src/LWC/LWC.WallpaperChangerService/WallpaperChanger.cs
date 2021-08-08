@@ -17,6 +17,7 @@ namespace LWC.WallpaperChangerService
     {
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Task serviceLoop = null;
+        private static string[] imageTypes = new string[] { ".jpg", ".png", ".gif" };
         public WallpaperChanger()
         {
             InitializeComponent();
@@ -53,8 +54,9 @@ namespace LWC.WallpaperChangerService
                 TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("ServiceIntervalInSeconds",1));
             TimeSpan waitAfterErrorInterval = 
                 TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("AfterErrorServiceIntervalInSeconds", 5));
+            
 
-            int counter = 0;
+            int counter = 1;
             while (!cancellation.WaitHandle.WaitOne(interval))
             {
                 try
@@ -63,6 +65,8 @@ namespace LWC.WallpaperChangerService
                     string wpdest = ConfigurationManager.AppSettings["WallpaperDestination"].ToString();
                     int pctRoot = 0;
                     int.TryParse(ConfigurationManager.AppSettings["PercentSelectFromRoot"].ToString(), out pctRoot);
+                    int keepImages = 5;
+                    int.TryParse(ConfigurationManager.AppSettings["KeepImageCount"].ToString(), out keepImages);
                     bool selectRoot = false;
                     Random rnd = new Random();
                     int chance = rnd.Next(1, 100);
@@ -161,6 +165,47 @@ namespace LWC.WallpaperChangerService
                         // Either way, we will pull images from the root directory instead of a sub-directory.
                         WallpaperChangerTools.Log("Wallpaper directory is root directory of " + wpdir, MessageTypes.Debug);
                     }
+
+                    // Scan directory for existing images
+                    List<KeyValuePair<string, int>> existingImages = new List<KeyValuePair<string, int>>();
+                    string[] filesInDest = Directory.GetFiles(wpdest);
+                    foreach (string file in filesInDest)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (imageTypes.Contains(fi.Extension.ToLower()))
+                        {
+                            string[] parts = fi.Name.Split('_');
+                            int imgCount = 0;
+                            int.TryParse(parts[0], out imgCount);
+                            if (imgCount == 0)
+                            {
+                                imgCount = existingImages.Count + 1;
+                            }
+                            existingImages.Add(new KeyValuePair<string, int>(file, imgCount));
+                        }
+                    }
+                    // Sort files by parsed number. Next step will delete any images over the keepImages number
+                    existingImages.Sort(delegate (KeyValuePair<string, int> pair1, KeyValuePair<string, int> pair2) { return pair1.Value.CompareTo(pair2.Value); });
+                    if (existingImages.Count()>keepImages)
+                    {
+                        for (var i=existingImages.Count()-1; i>=keepImages; i--)
+                        {
+                            try
+                            {
+                                File.Delete(existingImages[i].Key);
+                                WallpaperChangerTools.Log("Deleted file \"" + existingImages[i].Key + "\" from destination folder.", MessageTypes.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                WallpaperChangerTools.Log("Unable to delete image file " + existingImages[i].Key + ": " + ex.Message, MessageTypes.Warning);
+                            }
+                        }
+                    }
+
+
+
+
+
                     WallpaperChangerTools.Log("Iteration " + counter.ToString(), MessageTypes.Information, "RunServiceLoop");
                     if (cancellation.IsCancellationRequested)
                     {
@@ -177,7 +222,7 @@ namespace LWC.WallpaperChangerService
                     WallpaperChangerTools.Log(ex.Message, MessageTypes.Error, "RunServiceLoop");
                     interval = waitAfterErrorInterval;
                 }
-                if (++counter>9)
+                if (++counter>1)
                 {
                     cts.Cancel();
                 }
