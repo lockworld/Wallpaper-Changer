@@ -83,8 +83,8 @@ namespace LWC.WallpaperChangerService
                         {
                             DirectoryInfo di = new DirectoryInfo(dir);
                             string[] dates = di.Name.Split('-');
-                            int curMonth = 5;// DateTime.Now.Month;
-                            int curDay = 25;// DateTime.Now.Day;
+                            int curMonth = DateTime.Now.Month;
+                            int curDay = DateTime.Now.Day;
                             int minMonth = 0;
                             int maxMonth = 0;
                             int minDay = 0;
@@ -151,7 +151,7 @@ namespace LWC.WallpaperChangerService
                             */
                             List<KeyValuePair<string, double>> dList = wpdirList.ToList();
                             dList.Sort(delegate (KeyValuePair<string, double> pair1, KeyValuePair<string, double> pair2) { return pair1.Value.CompareTo(pair2.Value); });
-                            WallpaperChangerTools.Log("Wallpaper directory selected is \"" + dList.First().Key + "\"", MessageTypes.Debug);
+                            wpdir = dList.First().Key;
                         }
                         else
                         {
@@ -165,7 +165,7 @@ namespace LWC.WallpaperChangerService
                         // Either way, we will pull images from the root directory instead of a sub-directory.
                         WallpaperChangerTools.Log("Wallpaper directory is root directory of " + wpdir, MessageTypes.Debug);
                     }
-
+                    WallpaperChangerTools.Log("Wallpaper directory selected is \"" + wpdir + "\"", MessageTypes.Debug);
                     // Scan directory for existing images
                     List<KeyValuePair<string, int>> existingImages = new List<KeyValuePair<string, int>>();
                     string[] filesInDest = Directory.GetFiles(wpdest);
@@ -186,22 +186,62 @@ namespace LWC.WallpaperChangerService
                     }
                     // Sort files by parsed number. Next step will delete any images over the keepImages number
                     existingImages.Sort(delegate (KeyValuePair<string, int> pair1, KeyValuePair<string, int> pair2) { return pair1.Value.CompareTo(pair2.Value); });
-                    if (existingImages.Count()>keepImages)
+                    int count = 0;
+                    // We are keeping one less image so we can copy a new image from the source to the destination
+                    while (existingImages.Count()>keepImages-1) 
                     {
-                        for (var i=existingImages.Count()-1; i>=keepImages; i--)
+                        try
                         {
-                            try
-                            {
-                                File.Delete(existingImages[i].Key);
-                                WallpaperChangerTools.Log("Deleted file \"" + existingImages[i].Key + "\" from destination folder.", MessageTypes.Information);
-                            }
-                            catch (Exception ex)
-                            {
-                                WallpaperChangerTools.Log("Unable to delete image file " + existingImages[i].Key + ": " + ex.Message, MessageTypes.Warning);
-                            }
+                            File.Delete(existingImages[existingImages.Count()-1].Key);
+                            WallpaperChangerTools.Log("Deleted file \"" + existingImages[existingImages.Count() - 1].Key + "\" from destination folder.", MessageTypes.Information);
                         }
+                        catch (Exception ex)
+                        {
+                            WallpaperChangerTools.Log("Unable to delete image file " + existingImages[existingImages.Count() - 1].Key + ": " + ex.Message, MessageTypes.Warning);
+                        }
+                        existingImages.Remove(existingImages[existingImages.Count() - 1]);
                     }
 
+                    // Re-number remaining files to increment one
+                    count = 2;
+                    foreach (KeyValuePair<string, int> kvp in existingImages)
+                    {
+                        FileInfo fi = new FileInfo(kvp.Key);
+                        if (imageTypes.Contains(fi.Extension.ToLower()))
+                        {
+                            string[] nameParts = fi.Name.Split('_');
+                            int num = 0;
+                            int.TryParse(nameParts[0], out num);
+                            if (num!=0)
+                            {
+                                string newName = count.ToString("00") + '_' + fi.Name.Replace(nameParts[0] + "_", "");
+                                File.Move(kvp.Key,Path.Combine(fi.DirectoryName, newName));
+                            }
+                        }
+                        count++;
+                    }
+
+                    // Copy one random image from the source directory to the destination directory
+                    List<string> availImages = new List<string>();
+                    foreach (string file in Directory.GetFiles(wpdir))
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (imageTypes.Contains(fi.Extension.ToLower()))
+                        {
+                            availImages.Add(file);
+                        }
+                    }
+                    int rn = rnd.Next(0, availImages.Count);
+                    try
+                    {
+                        FileInfo fi = new FileInfo(availImages[rn]);
+                        string newFile = Path.Combine(wpdest, "01_" + fi.Name);
+                        File.Move(availImages[rn], newFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        WallpaperChangerTools.Log("Unable to move image file \"" + availImages[rn] + "\" to destination destination directory: " + ex.Message, MessageTypes.Warning);
+                    }
 
 
 
