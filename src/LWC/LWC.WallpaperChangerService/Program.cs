@@ -15,6 +15,7 @@ namespace LWC.WallpaperChangerService
         /// </summary>
         static void Main()
         {
+            log4net.Config.XmlConfigurator.Configure();
             if (!Debugger.IsAttached)
             {
                 ServiceBase[] ServicesToRun;

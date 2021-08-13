@@ -1,4 +1,5 @@
-﻿namespace LWC.WallpaperChangerService
+﻿
+namespace LWC.WallpaperChangerService
 {
     partial class ProjectInstaller
     {
@@ -33,16 +34,17 @@
             // 
             // WallpaperChangerProcessInstaller
             // 
-            this.WallpaperChangerProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalService;
+            this.WallpaperChangerProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
             this.WallpaperChangerProcessInstaller.Password = null;
             this.WallpaperChangerProcessInstaller.Username = null;
+            this.WallpaperChangerProcessInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceProcessInstaller1_AfterInstall);
             // 
             // WallpaperChangerService
             // 
             this.WallpaperChangerService.DelayedAutoStart = true;
-            this.WallpaperChangerService.Description = "Manages the slideshow images available for desktop wallpapers.";
+            this.WallpaperChangerService.Description = "Wallpaper Changer Service";
             this.WallpaperChangerService.DisplayName = "Wallpaper Changer Service";
-            this.WallpaperChangerService.ServiceName = "Wallpaper Changer";
+            this.WallpaperChangerService.ServiceName = "LWC.WallpaperChangerService";
             this.WallpaperChangerService.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

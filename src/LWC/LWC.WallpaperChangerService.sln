@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallpaperChangerService", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installers", "Installers", "{36F57A61-67B4-4011-8398-CB26D38E9F87}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WallpaperChangerServiceInstaller", "Installers\WallpaperChangerServiceInstaller\WallpaperChangerServiceInstaller.vdproj", "{F9347E09-454F-4507-94EF-D246F1619D33}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LWC.WallpaperChangerInstaller", "Installers\LWC.WallpaperChangerInstaller\LWC.WallpaperChangerInstaller.vdproj", "{422EE73A-4205-4ED9-90F0-B89392375D36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{91BCF433-CFDE-4E0A-B072-4840A406F537}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91BCF433-CFDE-4E0A-B072-4840A406F537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91BCF433-CFDE-4E0A-B072-4840A406F537}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9347E09-454F-4507-94EF-D246F1619D33}.Debug|Any CPU.ActiveCfg = Debug
-		{F9347E09-454F-4507-94EF-D246F1619D33}.Release|Any CPU.ActiveCfg = Release
+		{422EE73A-4205-4ED9-90F0-B89392375D36}.Debug|Any CPU.ActiveCfg = Debug
+		{422EE73A-4205-4ED9-90F0-B89392375D36}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F9347E09-454F-4507-94EF-D246F1619D33} = {36F57A61-67B4-4011-8398-CB26D38E9F87}
+		{422EE73A-4205-4ED9-90F0-B89392375D36} = {36F57A61-67B4-4011-8398-CB26D38E9F87}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {17A8B2E4-8D63-4B67-A9D7-726687D9C1DA}

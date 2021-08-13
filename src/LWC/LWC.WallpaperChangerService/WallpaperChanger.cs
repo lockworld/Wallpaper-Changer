@@ -51,9 +51,9 @@ namespace LWC.WallpaperChangerService
             CancellationToken cancellation = cts.Token;
             TimeSpan interval = TimeSpan.Zero;
             TimeSpan waitAfterSuccessfulInterval = 
-                TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("ServiceIntervalInSeconds",1));
+                TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("ServiceIntervalInSeconds",14400));
             TimeSpan waitAfterErrorInterval = 
-                TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("AfterErrorServiceIntervalInSeconds", 5));
+                TimeSpan.FromSeconds(WallpaperChangerTools.ReadConfigurationInt("AfterErrorServiceIntervalInSeconds", 300));
             
 
             int counter = 1;
@@ -75,6 +75,7 @@ namespace LWC.WallpaperChangerService
                         // We give users the chance to pull occasional images from the root directory.
                         // This allows them the option to have some images displayed year-round, and other images that are date-specific.
                         selectRoot = true;
+                        WallpaperChangerTools.Log("Pulling images from the default directory based on chance.", MessageTypes.Debug);
                     }
                     else
                     {
@@ -128,13 +129,13 @@ namespace LWC.WallpaperChangerService
                                     DateTime max = new DateTime(DateTime.Now.Year, maxMonth, maxDay);
                                     TimeSpan diff = max - min;
                                     wpdirList.Add(di.FullName, diff.TotalDays);
-                                    WallpaperChangerTools.Log("Setting wallpaper directory to \"" + di.FullName + "\" with a precision of " + diff.TotalDays + ".", MessageTypes.Information);
+                                    WallpaperChangerTools.Log("Setting wallpaper directory to \"" + di.FullName + "\" with a precision of " + diff.TotalDays + ".", MessageTypes.Debug);
                                 }
 
                             }
                             else
                             {
-                                WallpaperChangerTools.Log("Unable to parse directory \"" + di.FullName + "\" as wallpaper changer directory.", MessageTypes.Debug);
+                                WallpaperChangerTools.Log("Unable to parse directory \"" + di.FullName + "\" as wallpaper changer directory.", MessageTypes.Warning);
                             }
 
 
@@ -156,6 +157,7 @@ namespace LWC.WallpaperChangerService
                         else
                         {
                             selectRoot = true;
+                            WallpaperChangerTools.Log("Pulling images from the default directory because no images were found in the selected directory (" + wpdir + ").", MessageTypes.Warning);
                         }
                     }
 
@@ -236,7 +238,8 @@ namespace LWC.WallpaperChangerService
                     {
                         FileInfo fi = new FileInfo(availImages[rn]);
                         string newFile = Path.Combine(wpdest, "01_" + fi.Name);
-                        File.Move(availImages[rn], newFile);
+                        File.Copy(availImages[rn], newFile);
+                        WallpaperChangerTools.Log("Added file \"" + newFile + "\" to destination folder.", MessageTypes.Information);
                     }
                     catch (Exception ex)
                     {
@@ -246,7 +249,7 @@ namespace LWC.WallpaperChangerService
 
 
 
-                    WallpaperChangerTools.Log("Iteration " + counter.ToString(), MessageTypes.Information, "RunServiceLoop");
+                    WallpaperChangerTools.Log("Iteration " + counter.ToString(), MessageTypes.Debug, "RunServiceLoop");
                     if (cancellation.IsCancellationRequested)
                     {
                         break;
@@ -262,10 +265,10 @@ namespace LWC.WallpaperChangerService
                     WallpaperChangerTools.Log(ex.Message, MessageTypes.Error, "RunServiceLoop");
                     interval = waitAfterErrorInterval;
                 }
-                if (++counter>1)
-                {
-                    cts.Cancel();
-                }
+                //if (Debugger.IsAttached && ++counter>1)
+                //{
+                //    cts.Cancel();
+                //}
             }
         }
     }

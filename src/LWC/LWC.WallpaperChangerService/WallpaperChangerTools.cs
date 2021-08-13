@@ -12,11 +12,32 @@ namespace LWC.WallpaperChangerService
     public static class WallpaperChangerTools
     {
         private static ILog log = log4net.LogManager.GetLogger(typeof(WallpaperChanger));
+        private static readonly MessageTypes minLogLevel = (MessageTypes)Enum.Parse(typeof(MessageTypes), ConfigurationManager.AppSettings["MinimumLogLevel"].ToString());
         public static void Log(string message, MessageTypes type, string source="")
         {
             try
             {
-                log.Debug("Logging message: " + message);
+                if (type >= minLogLevel)
+                {
+                    switch (type)
+                    {
+                        case MessageTypes.Debug:
+                            log.Debug(message);
+                            break;
+                        case MessageTypes.Warning:
+                            log.Warn(message);
+                            break;
+                        case MessageTypes.Error:
+                            log.Error(message);
+                            break;
+                        case MessageTypes.Critical:
+                            log.Fatal(message);
+                            break;
+                        default:
+                            log.Info(message);
+                            break;
+                    }
+                }
                 //string path = AppDomain.CurrentDomain.BaseDirectory + "\\Logs";
                 //if (!Directory.Exists(path))
                 //{
