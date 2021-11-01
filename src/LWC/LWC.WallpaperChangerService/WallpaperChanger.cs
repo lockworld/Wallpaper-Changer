@@ -204,24 +204,31 @@ namespace LWC.WallpaperChangerService
                         existingImages.Remove(existingImages[existingImages.Count() - 1]);
                     }
 
+                    //Sort existingImages descending to ensure that the new file name doesn't exist. In some cases, where two iterations of the service grab the same image, you will end up with image 01_originalName.jpg and 02_originalName.jpg. If you attempt to rename image 01_originalName.jpg to 02_originalName.jpg, the system will throw an error because the file already exists. So, we reverse the sort order on these images and rename them in descending order. Since we've already removed any images over the maximum number of images minus one, we'll always have that last file slot available for use, so there won't be any naming conflicts.
+                    existingImages.Sort(delegate (KeyValuePair<string, int> pair1, KeyValuePair<string, int> pair2) { return pair2.Value.CompareTo(pair1.Value); });
                     // Re-number remaining files to increment one
-                    count = 2;
                     foreach (KeyValuePair<string, int> kvp in existingImages)
                     {
                         FileInfo fi = new FileInfo(kvp.Key);
-                        if (imageTypes.Contains(fi.Extension.ToLower()))
+                        try
                         {
-                            string[] nameParts = fi.Name.Split('_');
-                            int num = 0;
-                            int.TryParse(nameParts[0], out num);
-                            if (num!=0)
+                            if (imageTypes.Contains(fi.Extension.ToLower()))
                             {
-                                string newName = count.ToString("00") + '_' + fi.Name.Replace(nameParts[0] + "_", "");
-                                File.Move(kvp.Key,Path.Combine(fi.DirectoryName, newName));
+                                string[] nameParts = fi.Name.Split('_');
+                                int num = 0;
+                                int.TryParse(nameParts[0], out num);
+                                if (num != 0)
+                                {
+                                    string newName = (num + 1).ToString("00") + '_' + fi.Name.Replace(nameParts[0] + "_", "");
+                                    File.Move(kvp.Key, Path.Combine(fi.DirectoryName, newName));
+                                }
                             }
                         }
-                        count++;
-                    }
+                        catch (Exception ex)
+                        {
+                            WallpaperChangerTools.Log("Unable to rename file \"" + fi.Name + "\": " + ex.Message, MessageTypes.Warning, "RenameExistingImages");
+                        }
+            }
 
                     // Copy one random image from the source directory to the destination directory
                     List<string> availImages = new List<string>();
@@ -254,10 +261,10 @@ namespace LWC.WallpaperChangerService
                     {
                         break;
                     }
-                    if (counter % 3 == 0)
-                    {
-                        throw new Exception("There was a problem with iteration " + counter);
-                    }
+                    //if (counter % 3 == 0)
+                    //{
+                    //    throw new Exception("There was a problem with iteration " + counter); //simulate an error
+                    //}
                     interval = waitAfterSuccessfulInterval;
                 }
                 catch (Exception ex)
@@ -269,6 +276,7 @@ namespace LWC.WallpaperChangerService
                 //{
                 //    cts.Cancel();
                 //}
+                WallpaperChangerTools.Log("Sleeping for " + interval + "...", MessageTypes.Debug, "RunServiceLoop");
             }
         }
     }

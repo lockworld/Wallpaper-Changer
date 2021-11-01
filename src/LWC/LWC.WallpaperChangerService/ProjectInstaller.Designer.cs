@@ -34,7 +34,7 @@ namespace LWC.WallpaperChangerService
             // 
             // WallpaperChangerProcessInstaller
             // 
-            this.WallpaperChangerProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
+            this.WallpaperChangerProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalService;
             this.WallpaperChangerProcessInstaller.Password = null;
             this.WallpaperChangerProcessInstaller.Username = null;
             this.WallpaperChangerProcessInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceProcessInstaller1_AfterInstall);
