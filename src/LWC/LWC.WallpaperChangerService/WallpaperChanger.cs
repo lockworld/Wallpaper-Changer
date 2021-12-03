@@ -18,6 +18,7 @@ namespace LWC.WallpaperChangerService
         private CancellationTokenSource cts = new CancellationTokenSource();
         private Task serviceLoop = null;
         private static string[] imageTypes = new string[] { ".jpg", ".png", ".gif" };
+        private static Random rnd = new Random();
         public WallpaperChanger()
         {
             InitializeComponent();
@@ -68,7 +69,6 @@ namespace LWC.WallpaperChangerService
                     int keepImages = 5;
                     int.TryParse(ConfigurationManager.AppSettings["KeepImageCount"].ToString(), out keepImages);
                     bool selectRoot = false;
-                    Random rnd = new Random();
                     int chance = rnd.Next(1, 100);
                     if (chance <= pctRoot)
                     {
@@ -122,11 +122,11 @@ namespace LWC.WallpaperChangerService
                             }
                             if (minMonth > 0 && maxMonth > 0 && minDay > 0 && maxDay > 0)
                             {
-                                if (minMonth <= curMonth && maxMonth >= curMonth
-                                    && minDay <= curDay && maxDay >= curDay)
+                                if (minMonth <= curMonth && (maxMonth >= curMonth || maxMonth < minMonth)
+                                    && (minMonth < curMonth || minDay <= curDay) && (maxMonth > curMonth || maxDay >= curDay))
                                 {
                                     DateTime min = new DateTime(DateTime.Now.Year, minMonth, minDay);
-                                    DateTime max = new DateTime(DateTime.Now.Year, maxMonth, maxDay);
+                                    DateTime max = new DateTime(DateTime.Now.Year + (maxMonth<curMonth ? 1 : 0), maxMonth, maxDay);
                                     TimeSpan diff = max - min;
                                     wpdirList.Add(di.FullName, diff.TotalDays);
                                     WallpaperChangerTools.Log("Setting wallpaper directory to \"" + di.FullName + "\" with a precision of " + diff.TotalDays + ".", MessageTypes.Debug);
@@ -254,9 +254,6 @@ namespace LWC.WallpaperChangerService
                     }
 
 
-
-
-                    WallpaperChangerTools.Log("Iteration " + counter.ToString(), MessageTypes.Debug, "RunServiceLoop");
                     if (cancellation.IsCancellationRequested)
                     {
                         break;
